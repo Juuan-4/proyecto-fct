@@ -1,34 +1,42 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
-import { addDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import {
+  guardarTexto as guardarTextoEnFirebase,
+  cargarDatos,
+} from "@/lib/data/pruebas";
 
 export default function Home() {
   const [texto, setTexto] = useState("");
   const [datos, setDatos] = useState<string[]>([]);
+  const [error, setError] = useState("");
 
-  async function guardarTexto() {
-    if (!texto.trim()) return;
-
-    await addDoc(collection(db, "pruebas_temporales"), {
-      texto: texto,
-    });
-
-    setTexto("");
-    await cargarDatos();
+  async function actualizarDatos() {
+    try {
+      setError("");
+      const nuevosDatos = await cargarDatos();
+      setDatos(nuevosDatos);
+    } catch {
+      setError("No se pudieron cargar los datos.");
+    }
   }
 
-  async function cargarDatos() {
-    const snapshot = await getDocs(collection(db, "pruebas_temporales"));
+  async function guardar() {
+    if (!texto.trim()) return;
 
-    const nuevosDatos = snapshot.docs.map((doc) => doc.data().texto);
-
-    setDatos(nuevosDatos);
+    try {
+      setError("");
+      await guardarTextoEnFirebase(texto);
+      setTexto("");
+      await actualizarDatos();
+    } catch {
+      setError("No se pudo guardar el texto.");
+    }
   }
 
   useEffect(() => {
-    cargarDatos();
+    void actualizarDatos();
   }, []);
 
   return (
@@ -42,9 +50,11 @@ export default function Home() {
         placeholder="Escribe algo"
       />
 
-      <button type="button" onClick={guardarTexto}>
+      <button type="button" onClick={guardar}>
         Guardar
       </button>
+
+      {error && <p role="alert">{error}</p>}
 
       <h2>Datos guardados</h2>
 
