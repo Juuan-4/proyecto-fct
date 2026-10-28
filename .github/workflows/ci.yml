@@ -1,20 +1,18 @@
-﻿name: Comprobaciones del proyecto
+name: Comprobaciones del proyecto
 
 on:
   pull_request:
     branches:
       - main
   push:
-    branches:
-      - main
 
 jobs:
   comprobaciones:
-    name: Comprobar aplicación
+    name: Comprobar aplicaci�n
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar código
+      - name: Descargar c�digo
         uses: actions/checkout@v4
 
       - name: Preparar Node.js
@@ -29,8 +27,8 @@ jobs:
       - name: Comprobar tipos
         run: npm run typecheck
 
-      - name: Revisar código
+      - name: Revisar c�digo
         run: npm run lint
 
-      - name: Compilar aplicación
+      - name: Compilar aplicaci�n
         run: npm run build
