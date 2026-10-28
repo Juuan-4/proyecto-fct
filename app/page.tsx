@@ -35,8 +35,17 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    void actualizarDatos();
+      useEffect(() => {
+    async function cargarDatosIniciales() {
+      try {
+        const nuevosDatos = await cargarDatos();
+        setDatos(nuevosDatos);
+      } catch {
+        setError("No se pudieron cargar los datos.");
+      }
+    }
+
+    void cargarDatosIniciales();
   }, []);
 
   return (
