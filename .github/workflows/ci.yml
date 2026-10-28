@@ -1,0 +1,36 @@
+﻿name: Comprobaciones del proyecto
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  comprobaciones:
+    name: Comprobar aplicación
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Comprobar tipos
+        run: npm run typecheck
+
+      - name: Revisar código
+        run: npm run lint
+
+      - name: Compilar aplicación
+        run: npm run build
